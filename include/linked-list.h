@@ -9,7 +9,9 @@ typedef struct
 {
     void* data;
     int* next;
+    #ifdef DOUBLY_LINKED_LIST
     int* prev;
+    #endif
     int elem_size;
     int size;
     int capacity;
