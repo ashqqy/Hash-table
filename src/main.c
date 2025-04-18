@@ -5,11 +5,11 @@
 
 int main (int argc, const char* argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
         fprintf (stderr, "Expected input data for tests\n");
         exit (EXIT_FAILURE);
     }
 
-    HashTableBenchmark (argv[1]);
+    HashTableBenchmark (argv[1], argv[2]);
 }

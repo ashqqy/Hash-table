@@ -13,7 +13,8 @@ CXX_DEBUG_FLAGS ?= -D_DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggre
                    -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
 EXECUTABLE_BINARY = hash-table.x
-BENCHMARK_FILE = ./data/Tolstoy-Lev-War-and-Peace-Words.txt
+BENCHMARK_FILE_FOR_INSERT = ./data/Tolstoy-Lev-War-and-Peace-Words.txt
+BENCHMARK_FILE_FOR_FIND = ./data/words-for-find.txt
 
 SRC_DIR = src
 INCLUDE_DIR = include
@@ -51,7 +52,7 @@ $(COBJ): $(O_DIR)/%.o: %.c
 
 .PHONY: run
 run:
-	$(O_DIR)/$(EXECUTABLE_BINARY) $(BENCHMARK_FILE)
+	$(O_DIR)/$(EXECUTABLE_BINARY) $(BENCHMARK_FILE_FOR_INSERT) $(BENCHMARK_FILE_FOR_FIND)
 
 #--------------------------------------------------------------------
 

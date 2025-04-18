@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "benchmark.h"
 #include "hash-table.h"
@@ -20,17 +21,16 @@ while (0)
 
 //-------------------------------------------------
 
-void HashTableBenchmark (const char* input_file_name)
+void HashTableBenchmark (const char* words_for_insert_file_name, const char* words_for_find_file_name)
 {
-    assert (input_file_name != NULL);
+    assert (words_for_insert_file_name != NULL);
+    assert (words_for_find_file_name != NULL);
 
-    FILE* input_file = fopen (input_file_name, "rb");
-    CUSTOM_ASSERT (input_file != NULL);
+    input_data_t words_for_insert = {};
+    ReadFile (words_for_insert_file_name, &words_for_insert);
 
-    char* array = NULL;
-    size_t array_size = ReadFile (input_file, &array);
-
-    fclose (input_file);
+    input_data_t words_for_find = {};
+    ReadFile (words_for_find_file_name, &words_for_find);
 
     //---------------------------------------------
 
@@ -39,45 +39,88 @@ void HashTableBenchmark (const char* input_file_name)
 
     //---------------------------------------------
 
-    HashTableInsertsTest (hash_table, array);
+    HashTableInsertTest (hash_table, &words_for_insert);
+    HashTableFindTest (hash_table, &words_for_find);
 
     //---------------------------------------------
 
-    free (array); array = NULL;
     HashTableDestroy (hash_table);
+    free (hash_table);
+    free (words_for_insert.array); words_for_insert.array = NULL;
+    free (words_for_find.array); words_for_find.array = NULL;
 }
 
 //-------------------------------------------------
 
-// void HashTableInsertsTest (hash_table_t* hash_table, const char* array, size_t array_size)
-// {
-//     assert (hash_table != NULL);
-//     assert (array != NULL);
-//     assert (array_size > 0);
+void HashTableInsertTest (hash_table_t* hash_table, input_data_t* words_for_insert)
+{
+    assert (hash_table != NULL);
+    assert (words_for_insert != NULL);
 
+    char* current_word_ptr = words_for_insert->array;    
 
-// }
+    for (size_t i = 0; i < words_for_insert->n_words; ++i)
+    {
+        HashTableInsert (hash_table, current_word_ptr);
+        current_word_ptr = strchr(current_word_ptr, '\0') + 1;
+    }
+}
+
+void HashTableFindTest (hash_table_t* hash_table, input_data_t* words_for_find)
+{
+    assert (hash_table != NULL);
+    assert (words_for_find != NULL);
+
+    char* current_word_ptr = words_for_find->array;    
+
+    for (size_t i = 0; i < words_for_find->n_words; ++i)
+    {
+        hash_table_elem_t* elem = HashTableFindString (hash_table, current_word_ptr);
+        current_word_ptr = strchr(current_word_ptr, '\0') + 1;
+        if (elem != NULL)
+            printf ("string: %s; n_repeats = %d\n", elem->string, elem->repetitions_number);
+        else
+            printf ("Not found\n");
+    }
+}
 
 //-------------------------------------------------
 
-size_t ReadFile (FILE* input_file, char** array)
+input_data_t* ReadFile (const char* input_file_name, input_data_t* input_data)
 {
-    assert (input_file != NULL);
-    assert (array != NULL);
+    assert (input_file_name != NULL);
+    assert (input_data != NULL);
+
+    FILE* input_file = fopen (input_file_name, "rb");
+    CUSTOM_ASSERT (input_file != NULL);
     
     // Find file size
     fseek (input_file, 0L, SEEK_END);
     size_t size_input_file = (size_t) ftell(input_file);
     fseek(input_file, 0L, SEEK_SET);
 
-    *array = (char*) calloc (size_input_file, sizeof(char));
-    CUSTOM_ASSERT (*array != NULL);
+    input_data->array = (char*) calloc (size_input_file, sizeof(char));
+    CUSTOM_ASSERT (input_data->array!= NULL);
 
-    size_t n_readen = fread (*array, sizeof (char), size_input_file, input_file);
-    CUSTOM_ASSERT (size_input_file == n_readen);
+    input_data->array_size = fread (input_data->array, sizeof (char), size_input_file, input_file);
+    CUSTOM_ASSERT (size_input_file == input_data->array_size);
 
-    return size_input_file;
+    fclose (input_file);
+
+    // Set '\n' to '\0' and count n_words
+    char* current_word = input_data->array;
+    while ((current_word != NULL) && (current_word < input_data->array + input_data->array_size))
+    {
+        current_word = strchr (current_word, '\n');
+        if (current_word == NULL)
+            break;
+
+        *current_word = '\0';
+        input_data->n_words++;
+        current_word++;
+    }
+
+    return input_data;
 }
 
 //-------------------------------------------------
-

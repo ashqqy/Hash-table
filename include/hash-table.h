@@ -28,10 +28,8 @@ typedef struct
 void HashTableInit (hash_table_t* hash_table, int hash_table_initial_capacity, int lists_initial_capacity, int elem_size, hash_func_t HashFunc);
 void HashTableDestroy (hash_table_t* hash_table);
 
-void HashTableInsert (hash_table_t* hash_table, const char* string);
-
+void HashTableInsert (hash_table_t* hash_table, const char* string_ptr);
 hash_table_elem_t* HashTableFindString (hash_table_t* hash_table, const char* string);
-hash_table_elem_t* HashTableFindStringByHash (hash_table_t* hash_table, const char* string, uint32_t string_hash);
 
 uint32_t HashCrc32Intrinsic (const char* str);
 
