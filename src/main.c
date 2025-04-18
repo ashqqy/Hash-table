@@ -1,29 +1,15 @@
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "hash-table.h"
+#include "benchmark.h"
 
-static const char* DUMP_COMMAND = "dot ./dump/dump.dot -Tpng -o ./dump/dump.png"; // linux
-
-int main ()
+int main (int argc, const char* argv[])
 {
-    system ("mkdir dump");
-    FILE* dump_file = fopen ("./dump/dump.dot", "w");
+    if (argc != 2)
+    {
+        fprintf (stderr, "Expected input data for tests\n");
+        exit (EXIT_FAILURE);
+    }
 
-    list_t list = {};
-    ListInit (&list, 10, sizeof (int));
-
-    int insert_elem = 10;
-    ListInsertEnd (&list, &insert_elem);
-    insert_elem -= 2;
-    ListInsertBegin (&list, &insert_elem);
-    insert_elem += 1;
-    ListInsertAfter (&list, ListLogicalToPhysicalIndex (&list, 0), &insert_elem);
-
-    ListDump (dump_file, &list);
-    fclose (dump_file);
-    system (DUMP_COMMAND);
-
-    ListDestroy (&list);
+    HashTableBenchmark (argv[1]);
 }

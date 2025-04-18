@@ -13,13 +13,14 @@ CXX_DEBUG_FLAGS ?= -D_DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++ -Waggre
                    -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
 
 EXECUTABLE_BINARY = hash-table.x
+BENCHMARK_FILE = ./data/Tolstoy-Lev-War-and-Peace-Words.txt
 
 SRC_DIR = src
 INCLUDE_DIR = include
 O_DIR ?= build
 LIB_DIR ?= lib
 
-CSRC = $(SRC_DIR)/main.c $(SRC_DIR)/hash-table.c
+CSRC = $(SRC_DIR)/main.c $(SRC_DIR)/hash-table.c $(SRC_DIR)/benchmark.c
 CLIB = -llist
 COBJ = $(addprefix $(O_DIR)/, $(CSRC:.c=.o))
 
@@ -50,7 +51,7 @@ $(COBJ): $(O_DIR)/%.o: %.c
 
 .PHONY: run
 run:
-	$(O_DIR)/$(EXECUTABLE_BINARY)
+	$(O_DIR)/$(EXECUTABLE_BINARY) $(BENCHMARK_FILE)
 
 #--------------------------------------------------------------------
 
